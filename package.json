@@ -1,0 +1,20 @@
+{
+  "name": "bookmyshow_backend",
+  "version": "1.0.0",
+  "description": "this is backend project based on express js and postgress sql",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CHIRABRATA/bookmyshow_backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CHIRABRATA/bookmyshow_backend/issues"
+  },
+  "homepage": "https://github.com/CHIRABRATA/bookmyshow_backend#readme"
+}
