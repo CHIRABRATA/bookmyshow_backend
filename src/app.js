@@ -1,14 +1,17 @@
 const express = require("express");
+const authRouter = require("./routes/auth.routes"); // Import the new router
 
 const app = express();
 
-// Middleware
+// Global Middlewares
 app.use(express.json());
 
-// Base Route
+// Base Health Check Route
 app.get("/", (req, res) => {
-  res.send("API is running 🚀");
+  res.send("API is running cleanly 🚀");
 });
 
-// Export using CommonJS
+// Mount the Auth Router
+app.use("/api/auth", authRouter);
+
 module.exports = app;
