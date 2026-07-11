@@ -1,6 +1,7 @@
 const dotenv = require("dotenv");
+const path = require("path");
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // Since server.js and app.js are in the same 'src' folder, use "./app"
 const app = require("./app");

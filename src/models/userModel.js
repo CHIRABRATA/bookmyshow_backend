@@ -7,20 +7,20 @@ const bcrypt = require('bcrypt');
  * @param {string} plainTextPassword 
  * @param {string} role - 'ADMIN', 'ORGANISER', or 'ATTENDEE'
  */
-const createUser = async (email, plainTextPassword, role = 'ATTENDEE') => {
+const createUser = async (name ,email, plainTextPassword, role = 'ATTENDEE') => {
   // 1. Generate a salt and hash the password
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(plainTextPassword, saltRounds);
 
   // 2. Insert into the database
   const query = `
-    INSERT INTO users (email, password_hash, role) 
-    VALUES ($1, $2, $3) 
-    RETURNING id, email, role, created_at;
+    INSERT INTO users (name, email, password_hash, role) 
+    VALUES ($1, $2, $3, $4) 
+    RETURNING id, name, email, role, created_at;
   `;
   
   // 3. Execute the query using our connection pool
-  const values = [email, passwordHash, role];
+  const values = [name ,email, passwordHash, role];
   const result = await db.query(query, values);
   
   // Return the newly created user (without the password hash!)

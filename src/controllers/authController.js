@@ -2,11 +2,11 @@ const userModel = require('../models/userModel');
 
 const registerUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
 
-    // 1. Basic Validation
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+    // 1. Validation includes name now
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Name, email, and password are required' });
     }
 
     // 2. Check for existing user
@@ -15,15 +15,14 @@ const registerUser = async (req, res) => {
       return res.status(409).json({ error: 'Email is already registered' });
     }
 
-    // 3. Create the user in the database
-    // Defaulting to ATTENDEE. Later, we'll build a separate admin route for creating ORGANISERs.
-    const newUser = await userModel.createUser(email, password, 'ATTENDEE');
+    // 3. Create user
+    const newUser = await userModel.createUser(name, email, password, 'ATTENDEE');
 
-    // 4. Send success response (Notice we do NOT send the password back!)
     res.status(201).json({
       message: 'User registered successfully',
       user: {
         id: newUser.id,
+        name: newUser.name,
         email: newUser.email,
         role: newUser.role
       }
@@ -31,6 +30,13 @@ const registerUser = async (req, res) => {
 
   } catch (error) {
     console.error('Registration Error:', error);
+
+    if (error.code === 'ECONNREFUSED') {
+      return res.status(503).json({
+        error: 'Database connection refused. Check your PostgreSQL env vars and make sure the database is running.'
+      });
+    }
+
     res.status(500).json({ error: 'Internal server error' });
   }
 };
