@@ -18,7 +18,12 @@ const createUser = async (name ,email, plainTextPassword, role = 'ATTENDEE') => 
     VALUES ($1, $2, $3, $4) 
     RETURNING id, name, email, role, created_at;
   `;
-  
+  //add email validation here check if email is valid or not.
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new Error('Invalid email format');
+  }
+
   // 3. Execute the query using our connection pool
   const values = [name ,email, passwordHash, role];
   const result = await db.query(query, values);
@@ -32,6 +37,11 @@ const createUser = async (name ,email, plainTextPassword, role = 'ATTENDEE') => 
  * @param {string} email 
  */
 const findUserByEmail = async (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new Error('Invalid email format');
+  }
+
   const query = `SELECT * FROM users WHERE email = $1;`;
   const result = await db.query(query, [email]);
   return result.rows[0]; // Returns undefined if no user is found
