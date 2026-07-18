@@ -45,16 +45,20 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    if(!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
     const user = await userModel.findUserByEmail(email);
-
+// when attacker brute forces the login, it will always return 404 or 401, so the attacker cannot know if the email exists or not. 
+// This is a security measure to prevent user enumeration.
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'Invalid email or password' });
     }
 
-    const isMatch = await bycript.compare(password, user.password);
+    const isMatch = await bycript.compare(password, user.password_hash);
 
     if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
     const token = jwt.sign(

@@ -42,8 +42,8 @@ const findUserByEmail = async (email) => {
     throw new Error('Invalid email format');
   }
 
-  const query = `SELECT * FROM users WHERE email = $1;`;
-  const result = await db.query(query, [email]);
+  const query = 'SELECT id, name, email, password_hash, role FROM users WHERE email = $1;';
+   const result = await db.query(query, [email]);
   return result.rows[0]; // Returns undefined if no user is found
 };
 
