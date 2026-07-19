@@ -17,4 +17,7 @@ app.get("/", (req, res) => {
 // Mount the Auth Router
 app.use("/api/auth", authRouter);
 
+//add movie routes
+app.use("/api/movies", require("./routes/movie.routes"));
+
 module.exports = app;
