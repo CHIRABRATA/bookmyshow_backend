@@ -29,7 +29,32 @@ const createMovie = async (req, res) => {
     res.status(500).json({ error: "Internal server error while creating movie." });
   }
 };
+const getMovies = async (req, res) => {
+  try {
+    const movies = await movieModel.getAllMovies();
+    res.status(200).json({ movies });
+  } catch (error) {
+    console.error("Get Movies Error:", error);
+    res.status(500).json({ error: "Internal server error while fetching movies." });
+  }
+};
+
+const removeMovie = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const isDeleted = await movieModel.deleteMovieById(id);
+    if (!isDeleted) {
+      return res.status(404).json({ error: "Movie not found or already deleted." });
+    }
+    res.status(200).json({ message: "Movie successfully dropped from inventory." });
+  } catch (error) {
+    console.error("Delete Movie Error:", error);
+    res.status(500).json({ error: "Internal server error while deleting movie." });
+  }
+};
 
 module.exports = {
-  createMovie
-};
+  createMovie,
+  getMovies,  
+  removeMovie 
+}
