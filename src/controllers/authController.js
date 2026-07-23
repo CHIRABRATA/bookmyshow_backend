@@ -61,22 +61,29 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+  const token = jwt.sign(
+  { id: user.id, email: user.email, role: user.role },
+  process.env.JWT_SECRET,
+  { expiresIn: '1h' }
+);
 
-    res.status(200).json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
+// 2. Set the token inside a secure, HttpOnly cookie container
+res.cookie('token', token, {
+  httpOnly: true, // Prevents XSS scripts from reading the token!
+  secure: process.env.NODE_ENV === 'production', // Only sends over HTTPS in production
+  sameSite: 'strict', // Protects against CSRF attacks
+  maxAge: 3600000 // Cookie lifespan: 1 hour in milliseconds
+});
+
+// 3. Send back a clean user profile payload without exposing the token string to the body
+return res.status(200).json({
+  message: "Login successful! Security session initialized securely.",
+  user: {
+    id: user.id,
+    email: user.email,
+    role: user.role
+  }
+});
 
   } catch (error) {
     console.error('Login Error:', error);
