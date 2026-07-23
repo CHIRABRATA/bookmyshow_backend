@@ -1,5 +1,6 @@
 const showModel = require('../models/showModel');
 const db = require('../config/db');
+const seatModel = require('../models/seatModel');
 
 const scheduleShow = async (req, res) => {
   try {
@@ -26,13 +27,17 @@ const scheduleShow = async (req, res) => {
     }
 
     // 4. No collision found, record the schedule safely
-    const newShow = await showModel.insertShow({ movieId, theaterId, showTime, ticketPrice });
-    
-    res.status(201).json({
-      message: "Success! Showtime schedule created flawlessly.",
-      show: newShow
-    });
+// 4. No collision found, record the schedule safely
+const newShow = await showModel.insertShow({ movieId, theaterId, showTime, ticketPrice });
 
+// DYNAMIC AUTOMATION: Generate the seating matrix for the newly scheduled show that every
+   // theater hall has a unique capacity configuration
+await seatModel.generateSeatsForShow(newShow.id, theaterId);
+
+res.status(201).json({
+  message: "Success! Showtime schedule and seating matrix created flawlessly.",
+  show: newShow
+});
   } catch (error) {
     console.error("Schedule Show Error:", error);
     res.status(500).json({ error: "Internal server error while scheduling show." });
