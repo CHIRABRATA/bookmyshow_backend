@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎬 BookMyShow Backend
+# 🎬 Tiklik Backend
 
 ### A highly scalable, concurrent, and fault-tolerant movie ticket booking engine
 
