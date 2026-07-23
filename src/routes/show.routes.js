@@ -3,6 +3,7 @@ const showController = require('../controllers/showController');
 const { authenticateToken } = require('../middlewares/authMiddleware');
 const { authorizeRoles } = require('../middlewares/roleMiddleware');
 const seatModel = require('../models/seatModel');
+const redisClient = require("../config/redis");
 
 const router = express.Router();
 

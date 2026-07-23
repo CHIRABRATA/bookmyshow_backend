@@ -2,6 +2,13 @@ const showModel = require('../models/showModel');
 const db = require('../config/db');
 const seatModel = require('../models/seatModel');
 
+const isTransientDbError = (error) => {
+  return error?.code === 'ECONNREFUSED' ||
+    error?.code === 'ETIMEDOUT' ||
+    error?.message?.includes('timeout') ||
+    error?.message?.includes('terminated unexpectedly');
+};
+
 const scheduleShow = async (req, res) => {
   try {
     const { movieId, theaterId, showTime, ticketPrice } = req.body;
@@ -39,6 +46,11 @@ res.status(201).json({
   show: newShow
 });
   } catch (error) {
+    if (isTransientDbError(error)) {
+      console.warn("⚠️ Schedule Show skipped due to transient database error:", error.message);
+      return res.status(503).json({ error: "Database temporarily unavailable. Please try again shortly." });
+    }
+
     console.error("Schedule Show Error:", error);
     res.status(500).json({ error: "Internal server error while scheduling show." });
   }
