@@ -28,8 +28,9 @@ pool.on('error', (err) => {
   console.error('❌ Unexpected database pool error:', err);
 });
 
-// Export the query helper method cleanly
+// Export the query helper methods cleanly
 module.exports = {
   query: (text, params) => pool.query(text, params),
+  connect: () => pool.connect(),
   pool
 };

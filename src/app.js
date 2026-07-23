@@ -3,13 +3,18 @@ const authRouter = require("./routes/auth.routes"); // Import the new router
 const { limiter, authLimiter } = require("./rateLimiter"); // Import the rate limiters
 const cookies = require("cookie-parser"); // Import cookie-parser for handling cookies
 const showRouter = require("./routes/show.routes"); // Import the show router
+const bookingRouter = require("./routes/booking.routes"); // Import the booking router
 
 const app = express();
-// use cookie-parser middleware to parse cookies in incoming requests
+
+// Parse cookies before any route that needs them
 app.use(cookies());
 
 // Global Middlewares
 app.use(express.json());
+
+// Mount the booking router
+app.use("/api/bookings", bookingRouter);
 //use rate limiter for all requests
 app.use(limiter);
 
