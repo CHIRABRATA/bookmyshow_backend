@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const redisClient = require('../config/redis');
 
 /**
  * Stage 1: Lock seats temporarily for 10 minutes and create a PENDING booking
@@ -83,6 +84,8 @@ const lockSeatsForCheckout = async (req, res) => {
       await client.query(`INSERT INTO booking_seats (booking_id, seat_id) VALUES ($1, $2);`, [bookingId, seatId]);
     }
 
+    // Invalidate cache right before committing the database changes
+    await redisClient.del(`show:${showId}:seats`);
     await client.query('COMMIT');
     res.status(201).json({
       message: "Seats locked successfully for 10 minutes. Proceed to payment callback window.",
@@ -137,6 +140,8 @@ const processPaymentMock = async (req, res) => {
       await client.query(`UPDATE seats SET status = 'BOOKED', locked_until = NULL WHERE id IN (${placeholders});`, seatIds);
       await client.query(`UPDATE bookings SET status = 'CONFIRMED' WHERE id = $1;`, [bookingId]);
 
+      // Invalidate cache right before committing the database changes
+      await redisClient.del(`show:${booking.show_id}:seats`);
       await client.query('COMMIT');
       return res.status(200).json({ message: "Payment verified successfully! Ticket confirmed.", status: "CONFIRMED" });
     } else {
@@ -144,6 +149,8 @@ const processPaymentMock = async (req, res) => {
       await client.query(`UPDATE seats SET status = 'AVAILABLE', locked_until = NULL WHERE id IN (${placeholders});`, seatIds);
       await client.query(`UPDATE bookings SET status = 'FAILED' WHERE id = $1;`, [bookingId]);
 
+      // Invalidate cache right before committing the database changes
+      await redisClient.del(`show:${booking.show_id}:seats`);
       await client.query('COMMIT');
       return res.status(200).json({ message: "Payment failed or cancelled. Seats released back to public availability pools.", status: "FAILED" });
     }

@@ -4,6 +4,7 @@ const { limiter, authLimiter } = require("./rateLimiter"); // Import the rate li
 const cookies = require("cookie-parser"); // Import cookie-parser for handling cookies
 const showRouter = require("./routes/show.routes"); // Import the show router
 const bookingRouter = require("./routes/booking.routes"); // Import the booking router
+const adminRouter = require('./routes/admin.routes');
 
 const app = express();
 
@@ -29,5 +30,5 @@ app.use("/api/auth", authRouter);
 //add movie routes
 app.use("/api/movies", require("./routes/movie.routes"));
 app.use("/api/shows", showRouter); // Mount the show router
-
+app.use("/api/admin", adminRouter); // Mount the admin router
 module.exports = app;
